@@ -1,9 +1,11 @@
 import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
 
 const Register = () => {
-  const { createNewUser, user, setUser } = useContext(AuthContext);
+  const { createNewUser, user, setUser, updateUserProfile } =
+    useContext(AuthContext);
+  const navigate = useNavigate();
   const [error, setError] = useState({});
 
   const handleSubmit = (e) => {
@@ -22,12 +24,19 @@ const Register = () => {
       .then((result) => {
         const user = result.user;
         setUser(user);
+        updateUserProfile({ displayName: name, photoURL: photoURL })
+          .then(() => {
+            navigate("/");
+          })
+          .catch((error) => {
+            // console.log(error);
+          });
         // console.log(user);
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
+        // const errorMessage = error.message;
+        // console.log(errorCode, errorMessage);
       });
   };
   return (

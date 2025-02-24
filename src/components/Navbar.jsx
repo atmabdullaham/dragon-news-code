@@ -7,7 +7,7 @@ const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   return (
     <div className="flex justify-between">
-      <div>{user?.email}</div>
+      <div></div>
       <div className="nav space-x-5">
         <Link to="/">Home</Link>
         <Link to="/career">Career</Link>
@@ -15,7 +15,18 @@ const Navbar = () => {
       </div>
       <div className="login flex gap-2 items-center">
         <div className="">
-          <img src={userIcon} alt="" />
+          {user && user?.email ? (
+            <div className="flex gap-1 items-center">
+              <img
+                className="w-10 h-10 rounded-full"
+                src={user?.photoURL}
+                alt=""
+              />
+              <p>{user.displayName}</p>
+            </div>
+          ) : (
+            <img src={userIcon} alt="" />
+          )}
         </div>
         {user && user?.email ? (
           <button onClick={logout} className="btn btn-neutral rounded-none">
