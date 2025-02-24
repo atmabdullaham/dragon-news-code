@@ -1,23 +1,34 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 const Login = () => {
+  // ........................
   const { userLogin, setUser } = useContext(AuthContext);
-  const handleSubmit = (e) => {
+  // .........................
+  const [error, setError] = useState({});
+
+  // .........................
+  const location = useLocation();
+  const navigate = useNavigate();
+  console.log(location);
+
+  // .........................
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
     const email = form.get("email");
     const password = form.get("password");
-    console.log(email, password);
-    userLogin(email, password).then((result) => {
+
+    try {
+      const result = await userLogin(email, password);
       const user = result.user;
-      setUser(user).catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        alert(errorCode, errorMessage);
-      });
-    });
+      setUser(user);
+      navigate(location?.state ? location.state : "/");
+    } catch (err) {
+      setError((prevError) => ({ ...prevError, login: err.code }));
+      // alert(err.code); // Display error in an alert
+    }
   };
   return (
     <div className="min-h-[calc(100vh-100px)] flex justify-center items-center">
@@ -41,6 +52,9 @@ const Login = () => {
               className="input"
               placeholder="Password"
             />
+            {error.login && (
+              <div className="text-sm  text-red-500">{error.login}</div>
+            )}
             <div>
               <a className="link link-hover">Forgot password?</a>
             </div>
